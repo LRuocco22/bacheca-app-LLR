@@ -1,0 +1,29 @@
+name: bacheca_app
+description: "Bacheca di annunci di lavoro (client Flutter)."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.0.0
+
+# Come nell'esempio del corso: http provider shared_preferences intl
+# In più, solo per il curriculum:
+#   file_picker  -> scegliere il PDF dal telefono
+#   url_launcher -> aprire il PDF ricevuto
+dependencies:
+  flutter:
+    sdk: flutter
+  http: any
+  provider: any
+  shared_preferences: any
+  intl: any
+  file_picker: any
+  url_launcher: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+
+flutter:
+  uses-material-design: true
