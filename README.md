@@ -4,12 +4,38 @@ Client Flutter della bacheca: le aziende si registrano, pubblicano annunci e
 consultano le candidature; i candidati (senza login) consultano la bacheca e si
 candidano allegando il curriculum in PDF.
 
-Back-end: repository separato `bacheca_server` (Dart + shelf).
+Back-end: repository separato `bacheca-server-LLR` (Dart + shelf).
+
+## Ambiente di sviluppo e scelte tecniche
+
+Il progetto è stato sviluppato su un **Chromebook con Linux** (ambiente di
+sviluppo Linux di ChromeOS) e provato su un **iPhone**.
+
+- **Perché l'app è usata dal browser e non installata.** Per installare
+  un'app su iPhone servono un Mac (Xcode) e un account sviluppatore Apple,
+  che non ho. Per questo l'app è compilata per il **web**
+  (`flutter build web`): è lo stesso codice Flutter, che sull'iPhone si apre
+  in Safari (e si può aggiungere alla schermata Home come un'app).
+  Per lo stesso motivo il curriculum si sceglie con `file_picker` in
+  modalità web e si apre in una nuova scheda con `url_launcher`.
+- **Perché il tunnel.** Il telefono non riusciva a raggiungere direttamente
+  il server dentro l'ambiente Linux del Chromebook (port forwarding di
+  ChromeOS non funzionante). Ho quindi usato un tunnel Cloudflare
+  (`cloudflared tunnel --url http://localhost:8080`), che dà un indirizzo
+  `https://....trycloudflare.com` raggiungibile dal telefono.
+  Il tunnel trasporta solo il traffico: **il server, i dati e i curriculum
+  restano sul mio computer** e sono gestiti dal back-end scritto da me
+  (repository `bacheca-server-LLR`). Non si usano servizi esterni già pronti
+  (tipo Firebase o Supabase).
+- **Compilazione.** Il Chromebook non ha abbastanza memoria per compilare
+  Flutter, quindi la versione web la compila **GitHub Actions** a ogni push
+  (file `.github/workflows/build-web.yml`); il risultato (artefatto
+  `bacheca-web`) viene copiato nella cartella `web/` del server.
 
 ## Pacchetti
 
 Come nell'esempio del corso: `http`, `provider`, `shared_preferences`, `intl`.
-In più, solo per il curriculum: `file_picker` (scelta del PDF) e
+In più, solo per il curriculum: `file_picker` + `file_picker_web` (scelta del PDF) e
 `url_launcher` (apertura del PDF ricevuto).
 
 ## Struttura
