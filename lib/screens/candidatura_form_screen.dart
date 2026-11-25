@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../models/annuncio.dart';
 import '../services/api_client.dart';
+import '../utils/picker_options.dart';
 import '../utils/validators.dart';
 import '../widgets/error_view.dart';
 
@@ -42,31 +43,37 @@ class _CandidaturaFormScreenState extends State<CandidaturaFormScreen> {
 
   /// Apre la scelta del file e ne legge i byte
   /// (sul web non esiste un percorso del file: si lavora con i byte).
+  /// Non si filtra per estensione: su iPhone il filtro può rendere i file
+  /// non selezionabili. Il controllo "è un PDF?" lo fanno l'app e il server.
   Future<void> _scegliCv() async {
-    final file = await FilePicker.pickFile(
-      type: FileType.custom,
-      allowedExtensions: ['pdf'],
-    );
-    if (file == null) return; // annullato
+    String? errore;
     Uint8List? bytes;
+    String? nome;
     try {
+      final file = await FilePicker.pickFile(webOptions: cvWebOptions);
+      if (file == null) return; // annullato
+      nome = file.name;
       bytes = await file.readAsBytes();
-    } catch (_) {
-      bytes = null;
+    } catch (e) {
+      errore = 'Impossibile leggere il file selezionato ($e)';
     }
     if (!mounted) return;
-    String? errore;
-    if (bytes == null) {
-      errore = 'Impossibile leggere il file selezionato';
-    } else if (bytes.length > _maxCvBytes) {
-      errore = 'Il curriculum supera la dimensione massima di 5 MB';
-    } else if (!file.name.toLowerCase().endsWith('.pdf')) {
-      errore = 'Il curriculum deve essere un file PDF';
+    if (errore == null) {
+      if (bytes == null || nome == null) {
+        errore = 'Impossibile leggere il file selezionato';
+      } else if (bytes.length > _maxCvBytes) {
+        errore = 'Il curriculum supera la dimensione massima di 5 MB';
+      } else if (!nome.toLowerCase().endsWith('.pdf')) {
+        errore = 'Il curriculum deve essere un file PDF';
+      }
     }
+    final cvBytes = errore == null ? bytes : null;
+    final cvNome = errore == null ? nome : null;
+    final cvError = errore;
     setState(() {
-      _cvError = errore;
-      _cvBytes = errore == null ? bytes : null;
-      _cvNome = errore == null ? file.name : null;
+      _cvError = cvError;
+      _cvBytes = cvBytes;
+      _cvNome = cvNome;
     });
   }
 

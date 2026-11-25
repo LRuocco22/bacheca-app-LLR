@@ -18,6 +18,7 @@ dependencies:
   shared_preferences: any
   intl: any
   file_picker: ^13.4.1 # dalla v12 si usa FilePicker.pickFile(...)
+  file_picker_web: ^4.2.2 # opzioni per Safari (iPhone)
   url_launcher: any
 
 dev_dependencies:
