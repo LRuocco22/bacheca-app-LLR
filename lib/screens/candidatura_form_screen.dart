@@ -40,17 +40,21 @@ class _CandidaturaFormScreenState extends State<CandidaturaFormScreen> {
     super.dispose();
   }
 
-  /// Apre la scelta del file; withData: true legge subito i byte
-  /// (necessario sul web, dove non esiste un percorso del file).
+  /// Apre la scelta del file e ne legge i byte
+  /// (sul web non esiste un percorso del file: si lavora con i byte).
   Future<void> _scegliCv() async {
-    final result = await FilePicker.platform.pickFiles(
+    final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
-      withData: true,
     );
-    if (result == null || result.files.isEmpty) return; // annullato
-    final file = result.files.single;
-    final bytes = file.bytes;
+    if (file == null) return; // annullato
+    Uint8List? bytes;
+    try {
+      bytes = await file.readAsBytes();
+    } catch (_) {
+      bytes = null;
+    }
+    if (!mounted) return;
     String? errore;
     if (bytes == null) {
       errore = 'Impossibile leggere il file selezionato';

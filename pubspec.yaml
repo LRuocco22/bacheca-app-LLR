@@ -17,7 +17,7 @@ dependencies:
   provider: any
   shared_preferences: any
   intl: any
-  file_picker: any
+  file_picker: ^13.4.1 # dalla v12 si usa FilePicker.pickFile(...)
   url_launcher: any
 
 dev_dependencies:
